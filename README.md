@@ -1,4 +1,4 @@
-# 🦉 Odyssey
+# Odyssey
 
 > __"Sing to me, Muse, of the many ways..." — Map your personal journey with the wisdom of Athena.__
 
@@ -10,23 +10,22 @@
 ![SQLite](https://img.shields.io/badge/sqlite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/tailwindcss-%2338B2AC.svg?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
----
-
 ## Table of Contents
 
-- [Product Vision](#product-vision)
-- [Recommended Tech Stack](#recommended-tech-stack)
-- [Database Architecture](#database-architecture)
-- [Core Features](#core-features)
-- [Development Roadmap](#development-roadmap)
-
----
+- [Odyssey](#odyssey)
+  - [Table of Contents](#table-of-contents)
+  - [Product Vision](#product-vision)
+  - [Recommended Tech Stack](#recommended-tech-stack)
+  - [Database Architecture](#database-architecture)
+  - [Core Features](#core-features)
+    - [Geographical Scaling](#geographical-scaling)
+    - [Fibonacci Gamification](#fibonacci-gamification)
+    - [Shared Odysseys](#shared-odysseys)
+  - [Development Roadmap](#development-roadmap)
 
 ## Product Vision
 
 __Odyssey__ is a digital "atlas of experiences" designed to transform your travels and memories into a structured journey. Inspired by Athena’s guidance, this app allows users to create thematic maps (e.g., "Kiss Maps", "Food Quests") that automatically scale from __local detail (cities)__ to __global perspective (continents)__.
-
----
 
 ## Recommended Tech Stack
 
@@ -37,42 +36,40 @@ __Odyssey__ is a digital "atlas of experiences" designed to transform your trave
 - __Database:__ __SQLite3__ (lightweight and portable for initial development).
 - __ORM:__ SQLModel (bridge between Pydantic and SQLAlchemy).
 
----
-
 ## Database Architecture
 
-
-
-| Table | Description |
-| :--- | :--- |
-| __Users__ | ID, Username, Email, Password Hash, Total Badges. |
-| __Maps__ | ID, Name (e.g., "Kiss Map"), Type (Collaborative/Competitive), CreatorID. |
-| __Points__ | ID, MapID, UserID, Latitude, Longitude, City, Region, Country, Continent, Timestamp. |
-| __MapParticipants__ | MapID, UserID, Role (Owner/Collaborator), AssignedColor. |
-| __Achievements__ | ID, UserID, Type (Cities/Countries/Continents), Level (Fibonacci). |
-
----
+| Table               | Description                                                                          |
+| :------------------ | :----------------------------------------------------------------------------------- |
+| __Users__           | ID, Username, Email, Password Hash, Total Badges.                                    |
+| __Maps__            | ID, Name (e.g., "Kiss Map"), Type (Collaborative/Competitive), CreatorID.            |
+| __Points__          | ID, MapID, UserID, Latitude, Longitude, City, Region, Country, Continent, Timestamp. |
+| __MapParticipants__ | MapID, UserID, Role (Owner/Collaborator), AssignedColor.                             |
+| __Achievements__    | ID, UserID, Type (Cities/Countries/Continents), Level (Fibonacci).                   |
 
 ## Core Features
 
 ### Geographical Scaling
+
 Every point marked on the map is analyzed through a __Reverse Geocoding API__. The system automatically categorizes each entry into a hierarchical structure:
+
 1. City
 1. Region / Province
 1. Country
 1. Continent
+
 This allows for dynamic statistics such as __"You have explored 5% of Europe"__.
 
 ### Fibonacci Gamification
+
 Achievements follow the __Fibonacci Sequence__: __1, 2, 3, 5, 8, 13, 21...__
+
 - __Logic:__ Reach 5 different countries to unlock the "Pathfinder" rank. Reach 8 to become a "Voyager".
 - __Badges:__ For every __n__ achievements (e.g., every 3), the user is awarded a unique digital Badge to showcase on their profile.
 
 ### Shared Odysseys
+
 - __Collaborative Mode:__ Designed for couples or teams. Multiple users contribute to the same map, sharing goals and statistics.
 - __Competitive Mode:__ Friends share a map view, but each participant has a unique color. The interface displays a leaderboard based on geographical coverage.
-
----
 
 ## Development Roadmap
 
