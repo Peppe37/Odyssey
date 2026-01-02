@@ -8,6 +8,13 @@ class UserBase(BaseModel):
 
 class UserCreate(UserBase):
     password: str
+    accept_terms: bool  # Must be True
+    captcha_token: str  # Turnstile token
+
+class LoginRequest(BaseModel):
+    username: str
+    password: str
+    captcha_token: str  # Turnstile token
 
 class UserRead(UserBase):
     id: int

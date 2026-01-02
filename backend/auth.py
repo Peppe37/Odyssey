@@ -4,10 +4,10 @@ from passlib.context import CryptContext
 from jose import jwt
 from backend.core.config import settings
 
-# Secret key should be in settings, for now hardcoded default/placeholder if not set
-SECRET_KEY = "CHANGE_ME_IN_PROD" 
+# Use settings for configurations
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+ACCESS_TOKEN_EXPIRE_MINUTES = settings.ACCESS_TOKEN_EXPIRE_MINUTES
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -26,3 +26,4 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+

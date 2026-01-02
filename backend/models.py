@@ -6,7 +6,9 @@ class User(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     username: str = Field(index=True, unique=True)
     email: str = Field(index=True, unique=True)
-    hashed_password: str
+    hashed_password: Optional[str] = None  # Optional for OAuth users
+    google_id: Optional[str] = Field(default=None, unique=True, index=True)
+    terms_accepted_at: Optional[datetime] = None  # When user accepted T&C
     total_badges: int = Field(default=0)
     bio: Optional[str] = Field(default=None)
     created_at: datetime = Field(default_factory=datetime.utcnow)
