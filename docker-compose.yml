@@ -28,6 +28,13 @@ services:
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
       - PROJET_NAME=${PROJECT_NAME}
       - DEBUG=${DEBUG}
+      # Google OAuth
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - GOOGLE_REDIRECT_URI=${GOOGLE_REDIRECT_URI}
+      # Cloudflare Turnstile
+      - TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY}
+      - TURNSTILE_SECRET_KEY=${TURNSTILE_SECRET_KEY}
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -42,6 +49,7 @@ services:
       context: ./frontend
       args:
         - VITE_API_URL=${VITE_API_URL}
+        - VITE_TURNSTILE_SITE_KEY=${TURNSTILE_SITE_KEY}
     restart: always
     container_name: odyssey-frontend
     depends_on:
