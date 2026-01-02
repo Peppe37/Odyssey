@@ -1,12 +1,7 @@
 #!/bin/sh
 
-if [ "$DEBUG" = "False" ]; then
-    echo "Waiting for postgres..."
-    while ! nc -z $POSTGRES_SERVER $POSTGRES_PORT; do
-      sleep 0.1
-    done
-    echo "PostgreSQL started"
-fi
+# Database is already healthy due to depends_on condition in docker-compose
+# No need to wait for postgres manually
 
 if [ "$DEBUG" = "True" ]; then
     echo "Running in DEBUG mode"
