@@ -9,7 +9,7 @@ import {
 import BadgesDisplay from '../components/BadgesDisplay';
 import AddPointModal from '../components/AddPointModal';
 import InviteModal from '../components/InviteModal';
-import { ArrowLeft, UserPlus, Trash2, Users, Trophy, MapPin, Globe, Building2, Award, Crosshair, List, Globe2, Map as MapIcon, Filter } from 'lucide-react';
+import { ArrowLeft, UserPlus, Trash2, Users, Trophy, MapPin, Globe, Building2, Award, Crosshair, List, Globe2, Map as MapIcon, Filter, Menu, X } from 'lucide-react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 
@@ -114,6 +114,8 @@ const MapDetailPage: React.FC = () => {
 
     // Filtering state
     const [filterCategory, setFilterCategory] = useState<string | null>(null);
+    const [showFilterMenu, setShowFilterMenu] = useState(false);
+    const [showMobileMenu, setShowMobileMenu] = useState(false);
 
     useEffect(() => {
         if (map) {
@@ -217,32 +219,75 @@ const MapDetailPage: React.FC = () => {
 
     return (
         <div className="h-screen w-screen bg-slate-900 text-white flex flex-col">
-            <header className="bg-slate-800 border-b border-slate-700 px-4 py-3 flex items-center justify-between shrink-0">
-                <div className="flex items-center space-x-4">
-                    <button onClick={() => navigate('/home')} className="text-gray-400 hover:text-white"><ArrowLeft className="h-5 w-5" /></button>
-                    <h1 className="text-lg font-semibold">{map?.name}</h1>
-                    <span className={`text-xs px-2 py-1 rounded ${map?.type === 'Collaborative' ? 'bg-green-500/20 text-green-400' :
-                        map?.type === 'Competitive' ? 'bg-orange-500/20 text-orange-400' :
-                            'bg-blue-500/20 text-blue-400'
-                        }`}>{map?.type}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                    {/* Filter Dropdown */}
-                    <div className="relative group">
-                        <button className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm ${filterCategory ? 'bg-indigo-600' : 'bg-slate-700 hover:bg-slate-600'}`}>
-                            <Filter className="h-4 w-4" />
-                            <span>{filterCategory || 'All'}</span>
-                        </button>
-                        <div className="absolute top-full right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl p-2 hidden group-hover:block w-40 z-50">
-                            <button onClick={() => setFilterCategory(null)} className="w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm">All Categories</button>
+            {/* Mobile Menu Drawer */}
+            {showMobileMenu && (
+                <div className="fixed inset-0 z-[2000] md:hidden">
+                    <div className="absolute inset-0 bg-black/60" onClick={() => setShowMobileMenu(false)} />
+                    <div className="absolute right-0 top-0 h-full w-72 bg-slate-800 border-l border-slate-700 shadow-2xl p-4 flex flex-col">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-lg font-semibold">Menu</h3>
+                            <button onClick={() => setShowMobileMenu(false)} className="p-2 hover:bg-slate-700 rounded-lg">
+                                <X className="h-5 w-5" />
+                            </button>
+                        </div>
+                        <p className="text-xs text-gray-400 uppercase mb-2">Filter</p>
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                            <button onClick={() => { setFilterCategory(null); setShowMobileMenu(false); }} className={`px-3 py-2 rounded-lg text-sm ${!filterCategory ? 'bg-indigo-600' : 'bg-slate-700'}`}>All</button>
                             {CATEGORIES.map(cat => (
-                                <button key={cat.name} onClick={() => setFilterCategory(cat.name)} className="w-full text-left px-3 py-2 rounded hover:bg-slate-700 text-sm flex items-center">
-                                    <span className="mr-2">{cat.icon}</span> {cat.name}
+                                <button key={cat.name} onClick={() => { setFilterCategory(cat.name); setShowMobileMenu(false); }} className={`px-3 py-2 rounded-lg text-sm flex items-center ${filterCategory === cat.name ? 'bg-indigo-600' : 'bg-slate-700'}`}>
+                                    <span className="mr-1">{cat.icon}</span> {cat.name}
                                 </button>
                             ))}
                         </div>
+                        <hr className="border-slate-700 my-3" />
+                        <button onClick={() => { setViewMode(viewMode === '2d' ? '3d' : '2d'); setShowMobileMenu(false); }} className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm mb-2 ${viewMode === '3d' ? 'bg-purple-600' : 'bg-slate-700'}`}>
+                            {viewMode === '2d' ? <Globe2 className="h-5 w-5" /> : <MapIcon className="h-5 w-5" />}
+                            <span>{viewMode === '2d' ? 'Switch to 3D' : 'Switch to 2D'}</span>
+                        </button>
+                        <button onClick={() => { navigate(`/maps/${id}/points`); setShowMobileMenu(false); }} className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm bg-slate-700 mb-2">
+                            <List className="h-5 w-5" /><span>Manage Points</span>
+                        </button>
+                        <button onClick={() => { setShowStatsPanel(!showStatsPanel); setShowBadgesPanel(false); setShowMobileMenu(false); }} className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm mb-2 ${showStatsPanel ? 'bg-blue-600' : 'bg-slate-700'}`}>
+                            <Award className="h-5 w-5" /><span>Stats</span>
+                        </button>
+                        <button onClick={() => { setShowBadgesPanel(!showBadgesPanel); setShowStatsPanel(false); setShowMobileMenu(false); }} className={`flex items-center space-x-3 px-4 py-3 rounded-lg text-sm mb-2 ${showBadgesPanel ? 'bg-yellow-600' : 'bg-slate-700'}`}>
+                            <Trophy className="h-5 w-5" /><span>Badges</span>
+                        </button>
+                        {map?.type !== 'Personal' && map?.creator_id === user?.id && (
+                            <button onClick={() => { setShowInviteModal(true); setShowMobileMenu(false); }} className="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm bg-blue-600 mt-auto">
+                                <UserPlus className="h-5 w-5" /><span>Invite</span>
+                            </button>
+                        )}
                     </div>
+                </div>
+            )}
 
+            <header className="bg-slate-800 border-b border-slate-700 px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between shrink-0">
+                <div className="flex items-center space-x-2 sm:space-x-4 min-w-0">
+                    <button onClick={() => navigate('/home')} className="text-gray-400 hover:text-white shrink-0"><ArrowLeft className="h-5 w-5" /></button>
+                    <h1 className="text-base sm:text-lg font-semibold truncate">{map?.name}</h1>
+                    <span className={`hidden sm:inline text-xs px-2 py-1 rounded shrink-0 ${map?.type === 'Collaborative' ? 'bg-green-500/20 text-green-400' : map?.type === 'Competitive' ? 'bg-orange-500/20 text-orange-400' : 'bg-blue-500/20 text-blue-400'}`}>{map?.type}</span>
+                </div>
+                {/* Desktop controls */}
+                <div className="hidden md:flex items-center space-x-2">
+                    <div className="relative">
+                        <button onClick={() => setShowFilterMenu(!showFilterMenu)} className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm ${filterCategory ? 'bg-indigo-600' : 'bg-slate-700 hover:bg-slate-600'}`}>
+                            <Filter className="h-4 w-4" /><span>{filterCategory || 'All'}</span>
+                        </button>
+                        {showFilterMenu && (
+                            <>
+                                <div className="fixed inset-0 z-[1100]" onClick={() => setShowFilterMenu(false)} />
+                                <div className="absolute top-full right-0 mt-2 bg-slate-800 border border-slate-700 rounded-xl shadow-xl p-2 w-44 z-[1200]">
+                                    <button onClick={() => { setFilterCategory(null); setShowFilterMenu(false); }} className={`w-full text-left px-3 py-2.5 rounded text-sm ${!filterCategory ? 'bg-slate-700' : 'hover:bg-slate-700'}`}>All Categories</button>
+                                    {CATEGORIES.map(cat => (
+                                        <button key={cat.name} onClick={() => { setFilterCategory(cat.name); setShowFilterMenu(false); }} className={`w-full text-left px-3 py-2.5 rounded text-sm flex items-center ${filterCategory === cat.name ? 'bg-slate-700' : 'hover:bg-slate-700'}`}>
+                                            <span className="mr-2 text-lg">{cat.icon}</span> {cat.name}
+                                        </button>
+                                    ))}
+                                </div>
+                            </>
+                        )}
+                    </div>
                     <button onClick={() => setViewMode(viewMode === '2d' ? '3d' : '2d')} className={`flex items-center space-x-1 px-3 py-1.5 rounded-lg text-sm ${viewMode === '3d' ? 'bg-purple-600' : 'bg-slate-700 hover:bg-slate-600'}`}>
                         {viewMode === '2d' ? <Globe2 className="h-4 w-4" /> : <MapIcon className="h-4 w-4" />}
                         <span>{viewMode === '2d' ? '3D' : '2D'}</span>
@@ -250,11 +295,14 @@ const MapDetailPage: React.FC = () => {
                     <button onClick={() => navigate(`/maps/${id}/points`)} className="flex items-center space-x-1 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm"><List className="h-4 w-4" /><span>Manage</span></button>
                     <button onClick={() => { setShowBadgesPanel(!showBadgesPanel); setShowStatsPanel(false); }} className={`px-3 py-1.5 rounded-lg text-sm ${showBadgesPanel ? 'bg-yellow-600' : 'bg-slate-700 hover:bg-slate-600'}`}><Award className="h-4 w-4" /></button>
                     <button onClick={() => { setShowStatsPanel(!showStatsPanel); setShowBadgesPanel(false); }} className={`px-3 py-1.5 rounded-lg text-sm ${showStatsPanel ? 'bg-blue-600' : 'bg-slate-700 hover:bg-slate-600'}`}>Stats</button>
-
                     {map?.type !== 'Personal' && map?.creator_id === user?.id && (
                         <button onClick={() => setShowInviteModal(true)} className="flex items-center space-x-1 bg-blue-600 hover:bg-blue-700 px-3 py-1.5 rounded-lg text-sm"><UserPlus className="h-4 w-4" /><span>Invite</span></button>
                     )}
                 </div>
+                {/* Mobile hamburger */}
+                <button onClick={() => setShowMobileMenu(true)} className="md:hidden p-2 text-gray-400 hover:text-white hover:bg-slate-700 rounded-lg">
+                    <Menu className="h-5 w-5" />
+                </button>
             </header>
 
             <div className="flex-1 relative">

@@ -19,7 +19,10 @@ declare global {
     }
 }
 
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
+// Use dev key in development, production key otherwise
+const TURNSTILE_SITE_KEY = import.meta.env.DEV
+    ? (import.meta.env.VITE_TURNSTILE_SITE_KEY_DEV || import.meta.env.VITE_TURNSTILE_SITE_KEY || '')
+    : (import.meta.env.VITE_TURNSTILE_SITE_KEY || '');
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const RegisterPage: React.FC = () => {
@@ -111,13 +114,13 @@ const RegisterPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-            <div className="max-w-md w-full space-y-8 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-6">
+            <div className="w-full max-w-md space-y-5 bg-slate-800 p-5 sm:p-8 rounded-xl border border-slate-700 shadow-2xl">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 bg-purple-500/20 rounded-full flex items-center justify-center">
-                        <Map className="h-8 w-8 text-purple-400" />
+                    <div className="mx-auto h-10 w-10 sm:h-12 sm:w-12 bg-purple-500/20 rounded-full flex items-center justify-center">
+                        <Map className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400" />
                     </div>
-                    <h2 className="mt-6 text-3xl font-bold text-white">Begin your Odyssey</h2>
+                    <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-white">Begin your Odyssey</h2>
                 </div>
 
                 {error && (
@@ -203,17 +206,17 @@ const RegisterPage: React.FC = () => {
                     </div>
 
                     {/* Terms and Conditions Checkbox */}
-                    <div className="flex items-start">
-                        <div className="flex items-center h-5">
+                    <label htmlFor="accept-terms" className="flex items-start gap-3 cursor-pointer py-2">
+                        <div className="flex items-center pt-0.5">
                             <input
                                 id="accept-terms"
                                 type="checkbox"
                                 checked={acceptTerms}
                                 onChange={(e) => setAcceptTerms(e.target.checked)}
-                                className="h-4 w-4 rounded border-slate-600 bg-slate-700 text-purple-500 focus:ring-purple-500 focus:ring-offset-slate-800"
+                                className="h-5 w-5 rounded border-slate-600 bg-slate-700 text-purple-500 focus:ring-purple-500 focus:ring-offset-slate-800"
                             />
                         </div>
-                        <label htmlFor="accept-terms" className="ml-3 text-sm text-slate-300">
+                        <span className="text-sm text-slate-300">
                             I accept the{' '}
                             <Link to="/legal" className="text-purple-400 hover:text-purple-300 underline">
                                 Terms of Service
@@ -222,8 +225,8 @@ const RegisterPage: React.FC = () => {
                             <Link to="/legal" className="text-purple-400 hover:text-purple-300 underline">
                                 Privacy Policy
                             </Link>
-                        </label>
-                    </div>
+                        </span>
+                    </label>
 
                     {/* Turnstile Captcha */}
                     {TURNSTILE_SITE_KEY && (

@@ -16,12 +16,12 @@ async def verify_turnstile(token: str, remote_ip: str | None = None) -> bool:
     Returns:
         True if verification succeeded, False otherwise
     """
-    if not settings.TURNSTILE_SECRET_KEY:
+    if not settings.ACTIVE_TURNSTILE_SECRET_KEY:
         # If no secret key is configured, skip verification (dev mode)
         return True
     
     payload = {
-        "secret": settings.TURNSTILE_SECRET_KEY,
+        "secret": settings.ACTIVE_TURNSTILE_SECRET_KEY,
         "response": token,
     }
     

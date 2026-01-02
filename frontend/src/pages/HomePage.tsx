@@ -88,22 +88,23 @@ const HomePage: React.FC = () => {
         <div className="min-h-screen bg-slate-900 text-white">
             {/* Header */}
             <header className="bg-slate-800 border-b border-slate-700">
-                <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                        <div className="h-10 w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                            <MapIcon className="h-6 w-6 text-white" />
+                <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between">
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                        <div className="h-8 w-8 sm:h-10 sm:w-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                            <MapIcon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                         </div>
-                        <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                        <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                             Odyssey
                         </h1>
                     </div>
-                    <div className="flex items-center space-x-4">
-                        <span className="text-gray-300">Welcome, <span className="text-white font-medium">{user?.username}</span></span>
+                    <div className="flex items-center space-x-1 sm:space-x-4">
+                        {/* Hide welcome text on mobile */}
+                        <span className="hidden sm:block text-gray-300">Welcome, <span className="text-white font-medium">{user?.username}</span></span>
                         <Link to={`/profile/${user?.id}`} className="relative p-2 text-gray-400 hover:text-white transition-colors group" title="My Profile">
-                            <UserIcon className="h-6 w-6" />
+                            <UserIcon className="h-5 w-5 sm:h-6 sm:w-6" />
                         </Link>
                         <Link to="/leaderboard" className="relative p-2 text-gray-400 hover:text-white transition-colors group" title="Leaderboard">
-                            <Trophy className="h-6 w-6" />
+                            <Trophy className="h-5 w-5 sm:h-6 sm:w-6" />
                         </Link>
                         <Link to="/notifications" className="relative p-2 text-gray-400 hover:text-white transition-colors group" title="Notifications">
                             <Bell className="h-5 w-5" />
@@ -113,7 +114,7 @@ const HomePage: React.FC = () => {
                                 </span>
                             )}
                         </Link>
-                        <button onClick={logout} className="text-gray-400 hover:text-red-400 transition-colors">
+                        <button onClick={logout} className="p-2 text-gray-400 hover:text-red-400 transition-colors">
                             <LogOut className="h-5 w-5" />
                         </button>
                     </div>
@@ -123,42 +124,42 @@ const HomePage: React.FC = () => {
             {/* Stats Banner */}
             {stats && (
                 <div className="bg-gradient-to-r from-blue-900/50 to-purple-900/50 border-b border-slate-700">
-                    <div className="max-w-6xl mx-auto px-4 py-4">
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <div className="flex items-center space-x-3">
-                                <div className="h-10 w-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                                    <MapPin className="h-5 w-5 text-blue-400" />
+                    <div className="max-w-6xl mx-auto px-3 sm:px-4 py-3 sm:py-4">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                                    <MapPin className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-white">{stats.total_points}</p>
-                                    <p className="text-xs text-gray-400">Total Points</p>
+                                    <p className="text-lg sm:text-2xl font-bold text-white">{stats.total_points}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">Total Points</p>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="h-10 w-10 bg-green-500/20 rounded-lg flex items-center justify-center">
-                                    <Building2 className="h-5 w-5 text-green-400" />
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-green-500/20 rounded-lg flex items-center justify-center">
+                                    <Building2 className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-white">{stats.unique_cities}</p>
-                                    <p className="text-xs text-gray-400">Cities</p>
+                                    <p className="text-lg sm:text-2xl font-bold text-white">{stats.unique_cities}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">Cities</p>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="h-10 w-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
-                                    <Globe className="h-5 w-5 text-purple-400" />
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
+                                    <Globe className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-white">{stats.unique_countries}</p>
-                                    <p className="text-xs text-gray-400">Countries</p>
+                                    <p className="text-lg sm:text-2xl font-bold text-white">{stats.unique_countries}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">Countries</p>
                                 </div>
                             </div>
-                            <div className="flex items-center space-x-3">
-                                <div className="h-10 w-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
-                                    <Trophy className="h-5 w-5 text-yellow-400" />
+                            <div className="flex items-center space-x-2 sm:space-x-3">
+                                <div className="h-8 w-8 sm:h-10 sm:w-10 bg-yellow-500/20 rounded-lg flex items-center justify-center">
+                                    <Trophy className="h-4 w-4 sm:h-5 sm:w-5 text-yellow-400" />
                                 </div>
                                 <div>
-                                    <p className="text-2xl font-bold text-white">{stats.total_badges}</p>
-                                    <p className="text-xs text-gray-400">Badges</p>
+                                    <p className="text-lg sm:text-2xl font-bold text-white">{stats.total_badges}</p>
+                                    <p className="text-[10px] sm:text-xs text-gray-400">Badges</p>
                                 </div>
                             </div>
                         </div>

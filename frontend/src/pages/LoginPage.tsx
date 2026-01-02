@@ -20,7 +20,10 @@ declare global {
     }
 }
 
-const TURNSTILE_SITE_KEY = import.meta.env.VITE_TURNSTILE_SITE_KEY || '';
+// Use dev key in development, production key otherwise
+const TURNSTILE_SITE_KEY = import.meta.env.DEV
+    ? (import.meta.env.VITE_TURNSTILE_SITE_KEY_DEV || import.meta.env.VITE_TURNSTILE_SITE_KEY || '')
+    : (import.meta.env.VITE_TURNSTILE_SITE_KEY || '');
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const LoginPage: React.FC = () => {
@@ -121,13 +124,13 @@ const LoginPage: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4">
-            <div className="max-w-md w-full space-y-8 bg-slate-800 p-8 rounded-xl border border-slate-700 shadow-2xl">
+        <div className="min-h-screen flex items-center justify-center bg-slate-900 px-4 py-6">
+            <div className="w-full max-w-md space-y-6 bg-slate-800 p-5 sm:p-8 rounded-xl border border-slate-700 shadow-2xl">
                 <div className="text-center">
-                    <div className="mx-auto h-12 w-12 bg-blue-500/20 rounded-full flex items-center justify-center">
-                        <Map className="h-8 w-8 text-blue-400" />
+                    <div className="mx-auto h-10 w-10 sm:h-12 sm:w-12 bg-blue-500/20 rounded-full flex items-center justify-center">
+                        <Map className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400" />
                     </div>
-                    <h2 className="mt-6 text-3xl font-bold text-white">Sign in to your Odyssey</h2>
+                    <h2 className="mt-4 sm:mt-6 text-2xl sm:text-3xl font-bold text-white">Sign in to your Odyssey</h2>
                 </div>
 
                 {error && (

@@ -76,7 +76,7 @@ async def login_for_access_token(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -108,7 +108,7 @@ async def login_with_captcha(
     
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     access_token = create_access_token(
-        data={"sub": user.username}, expires_delta=access_token_expires
+        data={"sub": str(user.id)}, expires_delta=access_token_expires
     )
     return {"access_token": access_token, "token_type": "bearer"}
 
@@ -186,7 +186,7 @@ async def google_callback(
         # Generate JWT token
         access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token = create_access_token(
-            data={"sub": user.username}, expires_delta=access_token_expires
+            data={"sub": str(user.id)}, expires_delta=access_token_expires
         )
         
         # Redirect to frontend with token
@@ -200,4 +200,13 @@ async def google_callback(
 
 @router.get("/users/me", response_model=UserRead)
 def read_users_me(current_user: Annotated[User, Depends(get_current_user)]):
-    return current_user
+    # Return user with is_google_user flag
+    return UserRead(
+        id=current_user.id,
+        email=current_user.email,
+        username=current_user.username,
+        total_badges=current_user.total_badges,
+        bio=current_user.bio,
+        created_at=current_user.created_at,
+        is_google_user=current_user.google_id is not None
+    )

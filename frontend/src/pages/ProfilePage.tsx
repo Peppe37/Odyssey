@@ -8,7 +8,7 @@ import BadgesDisplay from '../components/BadgesDisplay';
 const ProfilePage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
     const navigate = useNavigate();
-    const { user, isAuthenticated, isLoading } = useAuth();
+    const { user, isAuthenticated, isLoading, logout } = useAuth();
     const [profile, setProfile] = useState<PublicProfile | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -73,9 +73,16 @@ const ProfilePage: React.FC = () => {
                 return;
             }
 
-            await updateProfile(dataToSend);
+            const result = await updateProfile(dataToSend);
             setShowEditModal(false);
-            loadProfile(); // Reload to see changes
+
+            // Only logout if password was changed (requires re-authentication)
+            if (result.password_changed) {
+                logout();
+                navigate('/login');
+            } else {
+                loadProfile(); // Reload to see changes
+            }
         } catch (e: any) {
             setError(e.response?.data?.detail || 'Failed to update profile');
         } finally {
@@ -115,17 +122,17 @@ const ProfilePage: React.FC = () => {
 
                     <div className="flex flex-col md:flex-row items-center md:items-start md:space-x-8 relative z-10">
                         {/* Avatar Placeholder */}
-                        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-3xl font-bold text-white shadow-lg mb-4 md:mb-0 border-4 border-slate-800">
+                        <div className="w-16 h-16 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-2xl sm:text-3xl font-bold text-white shadow-lg mb-4 md:mb-0 border-4 border-slate-800">
                             {profile.user.username.charAt(0).toUpperCase()}
                         </div>
 
                         <div className="text-center md:text-left flex-1 w-full">
-                            <div className="flex flex-col md:flex-row items-center justify-between mb-2">
-                                <h2 className="text-3xl font-bold text-white mb-2 md:mb-0">{profile.user.username}</h2>
+                            <div className="flex flex-col md:flex-row items-center justify-between mb-2 gap-2">
+                                <h2 className="text-2xl sm:text-3xl font-bold text-white">{profile.user.username}</h2>
                                 {isOwnProfile && (
                                     <button
                                         onClick={() => setShowEditModal(true)}
-                                        className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-lg text-sm transition-colors"
+                                        className="flex items-center space-x-2 bg-slate-700 hover:bg-slate-600 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                                     >
                                         <Edit2 className="h-4 w-4" />
                                         <span>Edit Profile</span>
@@ -162,22 +169,21 @@ const ProfilePage: React.FC = () => {
                                 )}
                             </div>
 
-                            {/* Stats Grid */}
-                            <div className="grid grid-cols-3 gap-4 max-w-md mx-auto md:mx-0">
-                                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
-                                    <div className="text-2xl font-bold text-blue-400">{profile.stats.total_points}</div>
-                                    <div className="text-xs text-gray-500 uppercase font-medium">Points</div>
+                            {/* Stats Grid - stacks on mobile */}
+                            <div className="grid grid-cols-3 gap-2 sm:gap-4 w-full max-w-md mx-auto md:mx-0">
+                                <div className="bg-slate-800/50 rounded-xl p-2 sm:p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-bold text-blue-400">{profile.stats.total_points}</div>
+                                    <div className="text-[10px] sm:text-xs text-gray-500 uppercase font-medium">Points</div>
                                     {profile.stats.global_rank_points && <div className="text-[10px] text-blue-500/70">#{profile.stats.global_rank_points}</div>}
                                 </div>
-                                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
-                                    <div className="text-2xl font-bold text-green-400">{profile.stats.unique_countries}</div>
-                                    <div className="text-xs text-gray-500 uppercase font-medium">Countries</div>
+                                <div className="bg-slate-800/50 rounded-xl p-2 sm:p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-bold text-green-400">{profile.stats.unique_countries}</div>
+                                    <div className="text-[10px] sm:text-xs text-gray-500 uppercase font-medium">Countries</div>
                                     {profile.stats.global_rank_countries && <div className="text-[10px] text-green-500/70">#{profile.stats.global_rank_countries}</div>}
-
                                 </div>
-                                <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
-                                    <div className="text-2xl font-bold text-purple-400">{profile.stats.unique_continents}</div>
-                                    <div className="text-xs text-gray-500 uppercase font-medium">Continents</div>
+                                <div className="bg-slate-800/50 rounded-xl p-2 sm:p-3 border border-slate-700/50 text-center hover:bg-slate-800 transition-colors">
+                                    <div className="text-xl sm:text-2xl font-bold text-purple-400">{profile.stats.unique_continents}</div>
+                                    <div className="text-[10px] sm:text-xs text-gray-500 uppercase font-medium">Continents</div>
                                     {profile.stats.global_rank_continents && <div className="text-[10px] text-purple-500/70">#{profile.stats.global_rank_continents}</div>}
                                 </div>
                             </div>
@@ -227,16 +233,19 @@ const ProfilePage: React.FC = () => {
                                     placeholder="Tell us about your travels..."
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm text-gray-400 mb-1">New Password (Empty to keep current)</label>
-                                <input
-                                    type="password"
-                                    value={editForm.password}
-                                    onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
-                                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    placeholder="••••••••"
-                                />
-                            </div>
+                            {/* Only show password field for non-Google users */}
+                            {!user?.is_google_user && (
+                                <div>
+                                    <label className="block text-sm text-gray-400 mb-1">New Password (Empty to keep current)</label>
+                                    <input
+                                        type="password"
+                                        value={editForm.password}
+                                        onChange={(e) => setEditForm({ ...editForm, password: e.target.value })}
+                                        className="w-full bg-slate-700 border border-slate-600 rounded-lg px-4 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="••••••••"
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex justify-end space-x-3 mt-8">

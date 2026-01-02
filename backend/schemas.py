@@ -21,6 +21,7 @@ class UserRead(UserBase):
     total_badges: int
     bio: Optional[str] = None
     created_at: datetime
+    is_google_user: bool = False  # True if user logged in with Google OAuth
     
 class Token(BaseModel):
     access_token: str

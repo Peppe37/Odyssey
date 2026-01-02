@@ -310,8 +310,15 @@ export const getPublicProfile = async (userId: number): Promise<PublicProfile> =
     return response.data;
 };
 
-export const updateProfile = async (data: UpdateProfileData): Promise<void> => {
-    await api.put('/users/me', data);
+export interface UpdateProfileResponse {
+    message: string;
+    user: { username: string; bio: string };
+    password_changed: boolean;
+}
+
+export const updateProfile = async (data: UpdateProfileData): Promise<UpdateProfileResponse> => {
+    const response = await api.put<UpdateProfileResponse>('/users/me', data);
+    return response.data;
 };
 
 // --- Missing Exports & Functions ---

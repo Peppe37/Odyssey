@@ -5,6 +5,7 @@ export interface User {
     email: string;
     username: string;
     total_badges: number;
+    is_google_user?: boolean;  // True if user logged in with Google OAuth
 }
 
 export interface AuthResponse {

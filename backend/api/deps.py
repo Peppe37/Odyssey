@@ -7,7 +7,6 @@ from backend.database import get_session
 from backend.core.config import settings
 from backend.auth import ALGORITHM, SECRET_KEY
 from backend.models import User
-from backend.schemas import TokenData
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
@@ -19,14 +18,22 @@ def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], session: Ses
     )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        sub: str = payload.get("sub")
+        if sub is None:
             raise credentials_exception
-        token_data = TokenData(username=username)
+        
+        # Support both user_id (new) and username (legacy) in sub
+        # Try to parse as int for user_id first
+        try:
+            user_id = int(sub)
+            user = session.get(User, user_id)
+        except ValueError:
+            # Legacy: sub is username
+            user = session.exec(select(User).where(User.username == sub)).first()
+            
     except JWTError:
         raise credentials_exception
     
-    user = session.exec(select(User).where(User.username == token_data.username)).first()
     if user is None:
         raise credentials_exception
     return user

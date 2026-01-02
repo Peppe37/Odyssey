@@ -6,11 +6,10 @@ from backend.database import get_session
 from backend.models import User, Map
 from backend.api.deps import get_current_user
 from backend.services.achievements import get_user_stats
-from passlib.context import CryptContext
+import bcrypt
 from datetime import datetime
 
 router = APIRouter(prefix="/users", tags=["users"])
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserSearchResult(BaseModel):
     id: int
@@ -166,8 +165,13 @@ def update_my_profile(
                 raise HTTPException(status_code=400, detail="Username already taken")
             current_user.username = request.username
             
+    password_changed = False
     if request.password:
-        current_user.hashed_password = pwd_context.hash(request.password)
+        # Google users cannot set a password if they don't have one
+        if current_user.google_id and not current_user.hashed_password:
+            raise HTTPException(status_code=400, detail="Google users cannot set a password")
+        current_user.hashed_password = bcrypt.hashpw(request.password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
+        password_changed = True
         
     if request.bio is not None: # Allow empty string to clear bio
         current_user.bio = request.bio
@@ -176,7 +180,7 @@ def update_my_profile(
     session.commit()
     session.refresh(current_user)
     
-    return {"message": "Profile updated successfully", "user": {"username": current_user.username, "bio": current_user.bio}}
+    return {"message": "Profile updated successfully", "user": {"username": current_user.username, "bio": current_user.bio}, "password_changed": password_changed}
 
 @router.get("/map-info/{map_id}", response_model=MapInfoResponse)
 def get_map_info_for_join(
